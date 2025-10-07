@@ -1,0 +1,326 @@
+                                  
+
+                                           ####Problem-01####
+
+##a##
+
+library(MASS)
+library(mvtnorm)
+
+set.seed(2343)
+n=1000
+n
+m.vec=c(11,8,12,29,10)
+m.vec
+cov.mat=matrix(c(6,4,3,2,1,4,5,4,3,2,3,4,7,4,3,2,3,4,9,4,1,2,3,4,4),nrow=5)
+cov.mat
+
+x=rmvnorm(n=n,mean=m.vec,,sigma=cov.mat)
+x
+
+
+##b##
+
+colnames(x)=c("X1","X2","X3","X4","X5")
+x
+boxplot(x,col="green")
+
+
+##c##
+
+par(mfrow=c(1,5))
+hist(x[,1],col=2,prob=T)
+lines(density(x[,1]),col="red",lwd=2)
+
+hist(x[,2],col=3,prob=T)
+lines(density(x[,2]),col="red",lwd=2)
+
+hist(x[,3],col=4,prob=T)
+lines(density(x[,3]),col="red",lwd=2)
+
+hist(x[,4],breaks=20,col=5,prob=T)
+lines(density(x[,4]),col="red",lwd=2)
+
+hist(x[,5],breaks=20,col=6,prob=T)
+lines(density(x[,5]),col="red",lwd=2)
+
+
+
+
+
+
+
+
+                                       ####Problem-02####
+
+##a##
+#Using function:
+rm(list=ls())
+library(stats4)
+library(mvtnorm)
+
+n=c(500,1500,6000)
+mu=c(5,5)
+mu
+covmat=matrix(c(8,-3,-3,5),ncol=2)
+covmat
+
+set.seed(1351)
+sample=list(rmvnorm(n[1],mu,covmat),rmvnorm(n[2],mu,covmat),rmvnorm(n[3],mu,covmat))
+
+neg.ll=function(mean1,mean2,cov11,cov12,cov22)
+  {
+	log.ll=sum(dmvnorm(x=sample[[1]],mean=c(mean1,mean2),
+	sigma=matrix(c(cov11,cov12,cov12,cov22),2,2),log=TRUE))
+	return(-log.ll)
+  }
+
+xbar.vec1=c(mean(sample[[1]][,1]),mean(sample[[1]][,2]))
+scov.mat1=var(sample[[1]])
+mle1=mle(minuslogl=neg.ll,start=list(mean1=xbar.vec1[1],mean2=xbar.vec1[2],
+cov11=scov.mat1[1,1],cov12=scov.mat1[1,2],cov22=scov.mat1[2,2]))
+
+neg.ll=function(mean1,mean2,cov11,cov12,cov22)
+  {
+	log.ll=sum(dmvnorm(x=sample[[2]],mean=c(mean1,mean2),
+	sigma=matrix(c(cov11,cov12,cov12,cov22),2,2),log=TRUE))
+	return(-log.ll)
+  }
+
+xbar.vec2=c(mean(sample[[2]][,1]),mean(sample[[2]][,2]))
+scov.mat2=var(sample[[2]])
+mle2=mle(minuslogl=neg.ll,start=list(mean1=xbar.vec2[1],mean2=xbar.vec2[2],
+cov11=scov.mat2[1,1],cov12=scov.mat2[1,2],cov22=scov.mat2[2,2]))
+
+neg.ll=function(mean1,mean2,cov11,cov12,cov22)
+  {
+	log.ll=sum(dmvnorm(x=sample[[3]],mean=c(mean1,mean2),
+	sigma=matrix(c(cov11,cov12,cov12,cov22),2,2),log=TRUE))
+	return(-log.ll)
+  }
+
+xbar.vec3=c(mean(sample[[3]][,1]),mean(sample[[1]][,2]))
+scov.mat3=var(sample[[3]])
+mle3=mle(minuslogl=neg.ll,start=list(mean1=xbar.vec3[1],mean2=xbar.vec3[2],
+cov11=scov.mat3[1,1],cov12=scov.mat3[1,2],cov22=scov.mat3[2,2]))
+
+mle1
+mle2
+mle3
+
+##Applying formula:
+
+n1=n[1]
+A=rmvnorm(n[1],mu,covmat)
+cov(A)
+x1=A[,1]
+x1.bar=mean(x1)
+x1.bar
+x2=A[,2]
+x2.bar=mean(x2)
+x2.bar
+d1=x1-x1.bar
+d2=x2-x2.bar
+T11=d1*t(d1)
+T22=d2*t(d2)
+T12=d1*t(d2)
+T12
+sigma1=(1/(n[1]))*sum(T11)
+sigma1
+sigma2=(1/(n[1]))*sum(T22)
+sigma2
+covarience=(1/(n[1]))*sum(T12)
+covarience
+
+n2=n[2]
+B=rmvnorm(n[2],mu,covmat)
+cov(B)
+x1=B[,1]
+x1.bar=mean(x1)
+x1.bar
+x2=B[,2]
+x2.bar=mean(x2)
+x2.bar
+d1=x1-x1.bar
+d2=x2-x2.bar
+T11=d1*t(d1)
+T22=d2*t(d2)
+T12=d1*t(d2)
+sigma1=(1/(n[2]))*sum(T11)
+sigma1
+sigma2=(1/(n[2]))*sum(T22)
+sigma2
+covarience=(1/(n[2]))*sum(T12)
+covarience
+
+n3=n[3]
+C=rmvnorm(n[3],mu,covmat)
+cov(C)
+x1=C[,1]
+x1.bar=mean(x1)
+x1.bar
+x2=C[,2]
+x2.bar=mean(x2)
+x2.bar
+d1=x1-x1.bar
+d2=x2-x2.bar
+T11=d1*t(d1)
+T22=d2*t(d2)
+T12=d1*t(d2)
+sigma1=(1/(n[3]))*sum(T11)
+sigma1
+sigma2=(1/(n[3]))*sum(T22)
+sigma2
+covarience=(1/(n[3]))*sum(T12)
+covarience
+
+
+
+
+
+
+
+                                     ####Problem-03####
+
+##a##
+
+#Calculate the Hotelling's test statistics for testing equality of single mean vector using:
+
+y1=c(580,473,664,739,143,127,703,108,185,111,815,770,759,928,849)
+y2=c(516,319,369,193,853,632,551,578,074,544,365,522,205,360,137)
+y3=c(613,514,782,293,927,512,936,856,244,618,500,542,443,402,396)
+y4=c(750,963,107,530,121,8377,118,113,663,816,930,570,789,611,700)
+y5=c(185,183,211,189,216,195,215,223,163,190,208,170,197,156,190)
+y=data.frame(y1,y2,y3,y4,y5)
+y
+n=length(y1)
+mu0=c(108,500,600,700,180)
+
+y1.bar <- mean(y1)
+y1.bar
+y2.bar <- mean(y2)
+y2.bar
+y3.bar <- mean(y3)
+y3.bar
+y4.bar <- mean(y4)
+y4.bar
+y5.bar <- mean(y5)
+y5.bar
+y.bar <- c(y1.bar,y2.bar,y3.bar,y4.bar,y5.bar)
+y.bar
+S <- cov(y)
+S
+S.inv <- solve(S)
+S.inv
+
+T2 <- n*t(y.bar-mu0)%*%S.inv%*%(y.bar-mu0)
+T2
+n=nrow(y) 
+n
+p=ncol(y)
+p
+F.dist <- ((n-p)/(p*(n-1)))*T2
+F.dist
+v1 <- p
+v1
+v2 <- n-p
+v2
+p.value=pf(F.dist, v1,v2,lower.tail=F)
+p.value
+out=list("T-squared"=T2,"p.value"=p.value)
+out
+
+
+##Using function:
+
+library(Hotelling)
+T.2=function(y,mu0)
+   {
+	n=nrow(y)
+	p=ncol(y)
+	D=matrix((apply(y,2,mean)-mu0),ncol=1)
+	S=var(y)
+	T1=n*t(D)%*%solve(S)%*%D
+	p.value=pf((n-p)*T2/((n-1)*p),df1=p,df2=n-p,lower.tail=FALSE)
+	out=list("T-squared"=T2,"p.value"=p.value)
+	out
+   }
+
+T.2(y,mu0)
+
+##Calculate the Hotelling's test statistics for testing equality of two mean vector using:
+
+library(Hotelling)
+data(container.df)
+split.data=split(container.df[,-1],container.df$gp)
+x = split.data[[1]]
+y = split.data[[2]]
+z = hotelling.stat(x,y)
+z
+
+data(container.df)
+fit=hotelling.test(.~gp,data=container.df)
+fit
+
+
+
+
+
+
+
+                                     #####Problem-04#####
+
+
+x=list(mean=c(7,10,44),cov=matrix(c(0.46,1.18,4.49,1.18,7.40,-1.35,4.49,-1.35,4.24),
+                                  nc=3,byrow=TRUE),n=30)
+x
+y=list(mean=c(5,4,2),cov=matrix(c(0.148,-0.679,0.209,-0.679,4.100,2.200,0.209,2.200,2.1800),
+                                nc=3,byrow=TRUE),n=50)
+y
+
+fit=hotelling.test(x,y,var.equal=FALSE)
+fit
+
+
+
+
+
+
+
+                                      ####Problem-05#####
+
+library(mvtnorm) 
+library(ellipse)
+
+set.seed(4186)
+
+# Set the covariance matrix 
+sigma2=matrix(c(5,2,2,5),ncol=2) # Set the means
+mu=c(5,5)
+# Get the correlation matrix 
+P=cov2cor(sigma2)
+P
+# Generate the data 
+x=rmvnorm(n=100,mean=mu,sigma=sqrt(sigma2)) # Plot the data
+plot(x)
+
+# Plot the ellipse 
+lines(ellipse(P,centre=c(5,5)),col="red")
+
+
+
+# Simultaneous 90% confidence regions for bivariate data ###############
+
+# install.packages("jocre") 
+
+library(jocre)
+bivar=mvtnorm::rmvnorm(n=100,mean=c(5,5),
+                       sigma=matrix(c(5,2,2,5),ncol=2)) 
+colnames(bivar)=c("AUC","Cmax")
+
+hotelling=cset(dat=bivar,method="hotelling",alpha=0.1) 
+summary(hotelling)
+
+
+
+                           ###End###
